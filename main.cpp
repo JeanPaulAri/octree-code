@@ -2,14 +2,53 @@
 #include <vector>
 #include <algorithm>
 #include <bitset>
+#include <fstream>
+#include <stack>
+#include <sstream>
 
 using namespace std;
 
 struct Point {
-    int x,y,z;
+    double x,y,z;
 
-    Point(int x, int y, int z) : x(x), y(y), z(z) {}
+    Point(double x, double y, double z) : x(x), y(y), z(z){}
+    Point() : x(0), y(0), z(0){}
 };
+
+auto readCSV = [](const string& file)-> vector<Point>{
+
+    ifstream in(file);
+    vector<Point> points;
+
+    if(!in.is_open()){
+        cout << "No se pudo abrir el archivo.\n";
+        return points;
+    }
+
+    string line;
+    while(getline(in, line)){
+
+        stringstream ss(line);
+        string token;
+        vector<double> tokens;
+
+        while(getline(ss, token, ',')){
+            double token_value = stod(token);
+            tokens.push_back(token_value);
+        }
+
+         if(tokens.size() == 3){
+            points.push_back(Point(tokens[0], tokens[1], tokens[2]));
+        }else{
+            cerr << "Error en el formato del archivo. Se necesita que cada punto tenga X Y Z\n";
+            // return points;
+        }
+        // points.push_back(Point(stod(tokens[0]), stod(tokens[1]), stod(tokens[2]));
+    }
+    in.close();
+    return points;
+};
+
 
 class Octree {
 
@@ -69,11 +108,11 @@ class Octree {
 
         Point find_closest( const Point &, int radius);
 
-}
+};
 
 int main(){
 
-
+    Octree *octree = new Octree(Point(0,0,0), 1000);
 
 
     return 0;
